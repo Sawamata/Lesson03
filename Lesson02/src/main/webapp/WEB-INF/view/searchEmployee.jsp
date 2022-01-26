@@ -36,10 +36,10 @@
       <td style="border: 1px solid"><c:out value="${u.name}" /></td>
       <td style="border: 1px solid"><c:out value="${u.email}" /></td>
       <td style="border: 1px solid">
-      <button type="submit" formaction="mainte">修正</button>
-      <input type="hidden" id="id" name="id" value="<%= Beans.getId() %>">
-      <input type="hidden" id="name" name="name" value="<%= Beans.getName() %>">
-      <input type="hidden" id="email" name="email" value="<%= Beans.getEmail() %>">
+      <button type="submit" formaction="mainte"  value="${u.id}" id="mainteid" name="mainteid" >修正</button>
+      <!-- 
+      <input type="hidden" id="id" name="id" value="${u.id}"><input type="hidden" formaction="mainte" id="name" name="name" value="${u.name}">
+      <input type="hidden" formaction="mainte" id="email" name="email" value="${u.email}"> -->
       </td>
       <!-- <td><c:out value="${u.name}" /></td>
       <td><c:out value="${u.name}" /></td> -->
@@ -53,5 +53,6 @@
 			
 			<br>
 		</div>
+		${error}
 	</body>
 </html>

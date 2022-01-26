@@ -2,30 +2,24 @@ package com.seiken_soft.model.impl;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.sql.Statement;
 
 import com.seiken_soft.beans.Beans;
 public class EmployeeUpdateModelImpl {
 
 	//接続用の情報をフィールドに定数として定義
-//	private static String RDB_DRIVE = "com.mysql.jdbc.Driver";
 	private static String RDB_DRIVE = "com.mysql.cj.jdbc.Driver";
 	private static String URL = "jdbc:mysql://localhost:3306/TestDB";
-//	private static String URL = "jdbc:mysql://localhost/testdb";
-//	private static String URL = "jdbc:mysql://localhost/TestDB";
  	private static String USER = "testuser";
-// 	private static String USER = "root";
  	private static String PASS = "test";
-// 	private static String PASS = "sawamata";
  
  	//データベース接続を行うメソッド
  	public static Connection getConnection(){
  		try{
  			Class.forName(RDB_DRIVE);
  			Connection con = DriverManager.getConnection(URL, USER, PASS);
+ 			con.setAutoCommit(false);
 // 			System.out.println("test2");
  			return con;
  		}catch(Exception e){
@@ -34,54 +28,39 @@ public class EmployeeUpdateModelImpl {
  		}
  	}
 
- 	//データベースから全てのアカウント情報の検索を行うメソッド
- 	public ArrayList<Beans> search(String id){
-// 	public ArrayList<Beans> search(String id, String name){
+ 	//データベースへデータを登録するメソッド
+ 	public int update(Beans beans) throws SQLException{
  		//変数宣言
  		Connection con = null;
- 		PreparedStatement  smt = null;
+ 		Statement  smt = null;
  
- 		//return用オブジェクトの生成
- 		ArrayList<Beans> list = new ArrayList<Beans>();
+ 		//return用変数
+ 		int count = 0;
  
  		//SQL文
- 		String sql = "UPDATE FROM M_Emploee SET name = ?, email = ?, WHERE id = ?";
-
-//		smt.setString(1, Beans.getName());
-//		smt.setString(2, Beans.getEmail());
-//		smt.setInt(3, Beans.getId());
-// 		String sql = "SELECT * FROM M_Emploee WHERE EMPLOYEE_ID LIKE '%" + id + "%'";
-// 		String sql;
-//        if (id.equals("0")) {
-//            sql = "SELECT * FROM M_Emploee ;" ;
-//      } else if (id.equals("0"))   {
-//      } else  {
-//            sql = "SELECT * FROM sample_01 WHERE id=" + id +  ";" ;
-//      }
-//        if (name.equals("0")) {
-//            sql = "SELECT * FROM M_Emploee ;" ;
-//      } else  {
-//            sql = "SELECT * FROM M_Emploee WHERE name=" + name +  ";" ;
-//      }
+ 		String sql = "UPDATE M_Emploee SET "
+ 			+ "EMPLOYEE_NAME = '" + beans.getName() + "', "
+ 			+ "E_MAILADDRESS = '" + beans.getEmail() + "' "
+ 			+ "WHERE EMPLOYEE_ID = '" + beans.getId() + "'";
+        System.out.println(sql);
  
- 		try{
- 			con = getConnection();
- 			smt = con.prepareStatement(sql);
+        con = getConnection();
+        try{
+ 			
+ 			smt = con.createStatement();
  
  			//SQLをDBへ発行
- 			ResultSet rs = smt.executeQuery(sql);
- 
- 			//検索結果を配列に格納
- 			while(rs.next()){
- 				Beans beans =new Beans();
- 				beans.setId(rs.getString("EMPLOYEE_ID"));
- 				beans.setName(rs.getString("EMPLOYEE_NAME"));
- 				beans.setEmail(rs.getString("E_MAILADDRESS"));
- 				list.add(beans);
- 			}
- 
+ 			count = smt.executeUpdate(sql);
+ 			
+ 			con.commit();
+
+ 		}catch(SQLException sqle){
+ 			con.rollback();
+ 			throw sqle;
  		}catch(Exception e){
- 			throw new IllegalStateException(e);
+ 			e.printStackTrace();
+			con.rollback();
+ 			throw e;
  		}finally{
  			//リソースの開放
  			if(smt != null){
@@ -91,6 +70,6 @@ public class EmployeeUpdateModelImpl {
  				try{con.close();}catch(SQLException ignore){}
  			}
  		}
- 		return list;
+ 		return count;
  	}
  }

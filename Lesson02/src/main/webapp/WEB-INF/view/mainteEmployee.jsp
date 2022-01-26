@@ -1,8 +1,8 @@
 <%@page contentType="text/html; charset=UTF-8"%>
 <%@page import="java.util.ArrayList,com.seiken_soft.beans.Beans"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%
-Beans id = (Beans)request.getAttribute("id");
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%
+//リクエストスコープからのデータの取得
+String mainteid = (String)request.getAttribute("mainteid");
 %>
 <html>
 	<head>
@@ -13,23 +13,42 @@ Beans id = (Beans)request.getAttribute("id");
 			<h2 style="text-align:center">修正したい社員名・メールアドレスを入力してください</h2>
 			<hr style="height:3; background-color:#0000ff" />
 			<br>
-	<form action="update" method=post>
-		<div style=" display: flex; width: 800px; text-align: center; margin: 0 auto;">
-			<div style=" flex: 1;　width: 200px;">
- 			<table style="margin:0 auto">
- 				<tr>
- 					<th style="background-color:#6666FF; width:100">ID</th>
- 				</tr>
- 				<tr>
- 					<td style="text-align:center; width:100"><%= Beans.getId() %></td>
- 				</tr>
- 			</table>
-			</div>
-		</div>
+ 			<form action="update" method=post onsubmit="return beforeSubmit()">
+ 				<br>
+ 				<table style="margin:0 auto ; text-align: center;">
+ 					<tr>
+ 						<td style="width:100px;text-align:right">社員ID：</td>
+ 						<td style="text-align:left"><%= mainteid %>
+ 						<input type="hidden" name="id" value="<%= mainteid %>"></td>
+ 					</tr>
+ 					<tr>
+ 						<td style="width:100px;text-align:right">名前：</td>
+ 						<td ><input type=text size="30" name="name"></input></td>
+ 					</tr>
+ 					<tr>
+ 						<td style="width:100px;text-align:right">アドレス：</td>
+ 						<td ><input type=text size="30" name="email"></input></td>
+ 					</tr>
+ 					<tr>
+ 						<td colspan=2 style="text-align:right">
+ 							<input type="submit" value="更新">
+ 						</td>
+ 					</tr>
+ 				</table>
+ 			</form>
 		
-			</form>	
 			
 			<br>
 		</div>
+		
+<script>
+  function beforeSubmit() {
+    if(window.confirm('更新しますか？')) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+</script>
 	</body>
 </html>
