@@ -18,35 +18,77 @@
         http://mybatis.org/schema/mybatis-spring-1.2.xsd">
 
     <!-- Enables the Spring MVC @Controller programming model -->
-    <mvc:annotation-driven></mvc:annotation-driven>
+    <mvc:annotation-driven content-negotiation-manager="contentNegotiationManager"></mvc:annotation-driven>
+    <bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+      <property name="favorPathExtension" value="false"></property>
+      <property name="ignoreAcceptHeader" value="false"></property>
+    </bean>
+    
+    <!-- @Autowiredアノテーションを有効にする -->
+    <context:annotation-config></context:annotation-config>
+    
+    <!-- コンポーネントスキャン -->
+    <context:component-scan base-package="com.seiken_soft"></context:component-scan>
+    <context:component-scan base-package="com.seiken_soft.controller"></context:component-scan>
+    <!-- 
+    <context:component-scan base-package="com.seiken-soft.dao"></context:component-scan>
+    <context:component-scan base-package="com.seiken-soft.entity"></context:component-scan>
+    <context:component-scan base-package="com.seiken-soft.model"></context:component-scan>
+    <context:component-scan base-package="com.seiken-soft.model.impl"></context:component-scan>
+    -->
 
     <!-- Thymeleaf テンプレートリゾルバの設定 -->
     <bean id="templateResolver" class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
       <!-- テンプレートファイルのrootパス(ここでは、/webapps直下となる)-->
-      <property name="prefix" value="/WEB-INF/templates/" />
+<!--       <property name="prefix" value="/"></property> -->
+      <property name="prefix" value="/WEB-INF/templates/"></property>
       <!-- テンプレートファイルの拡張子(jspでも良いが単体でブラウザに表示できる便利さから htmlを採用する) -->
-      <property name="suffix" value=".html" />
+      <property name="suffix" value=".html"></property>
       <!-- DocType はHTML5　決まりごと(HTML4では動きません！) -->
-      <property name="templateMode" value="HTML5" />
-      <property name="cacheable" value="false" />
+      <property name="templateMode" value="HTML5"></property>
+      <property name="cacheable" value="false"></property>
     </bean>
 
     <!-- Thymeleafテンプレートエンジンの設定 -->
     <bean id="templateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
       <!-- 上で定義した templateResolverに依存する -->
-      <property name="templateResolver" ref="templateResolver" />
+      <property name="enableSpringELCompiler" value="true"></property>
+      <property name="templateResolver" ref="templateResolver"></property>
+      <!-- 
+      <property name="additionalDialects">
+        <set>
+          <bean class="org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect" />
+          <bean class="org.thymeleaf.extras.java8time.dialect.Java8TimeDialect" />
+        </set>
+      </property>
+      -->
     </bean>
 
     <!-- Thymeleaf View Resolverの設定 -->
-    <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
-      <!-- 上で定義したtemplateEngineに依存する -->
-      <property name="templateEngine" ref="templateEngine" />
-      <!-- 文字エンコードを指定（無いと、文字化けが発生する） -->
-      <property name="characterEncoding" value="UTF-8" />
-    </bean>
+    <mvc:view-resolvers>
+      <bean class="org.thymeleaf.spring4.view.ThymeleafViewResolver">
+        <!-- 上で定義したtemplateEngineに依存する -->
+        <property name="templateEngine" ref="templateEngine"></property>
+        <!-- 文字エンコードを指定（無いと、文字化けが発生する） -->
+        <property name="characterEncoding" value="UTF-8"></property>
+        <property name="order" value="1"></property>
+        <!-- 
+        <property name="viewNames" value="*.html"></property>
+         -->
+      </bean>
+    </mvc:view-resolvers>
 
     <!-- Default Servlet -->
     <mvc:default-servlet-handler></mvc:default-servlet-handler>
+    
+    <!-- メッセージ管理  -->
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+      <property name="basenames">
+        <list>
+          <value>i18n/application-messages</value>
+        </list>
+      </property>
+    </bean>
 
     <!-- Static Resources -->
     <mvc:resources mapping="/resources/**" location="/resources" cache-period="#{60 * 60}"></mvc:resources>
@@ -54,10 +96,10 @@
     <!-- MySQL DataSource（MySQLが未設定なのでここは後で変更） -->
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
       <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"></property>
-      <property name="url" value="jdbc:mysql://localhost:3306/TestDB?allowPublicKeyRetrieval=true&amp;useSSL=false&amp;serverTimezone=GMT&amp;useUnicode=true&amp;characterEncoding=UTF-8"></property>
-      <property name="username" value="root"></property>
-      <property name="password" value="sawamata"></property>
-      <property name="defaultAutoCommit" value="false"></property>
+      <property name="url" value="jdbc:mysql://localhost:3306/TestDB?allowPublicKeyRetrieval=true&amp;useSSL=false&amp;serverTimezone=GMT&amp;useUnicode=yes&amp;characterEncoding=UTF-8"></property>
+      <property name="username" value="testuser"></property>
+      <property name="password" value="20211020nnAkAchInOchI"></property>
+      <property name="connection.autoCommit" value="false"></property>
     </bean>
     
     <!-- トランザクションマネージャー -->
@@ -72,12 +114,9 @@
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
       <property name="dataSource" ref="dataSource"></property>
       <property name="configLocation" value="/META-INF/mybatis-config.xml"></property>
-      <property name="mapperLocations" value="classpath*:com/seiken_soft/lesson03/sql/*.xml"></property>
     </bean>
-    <mybatis-spring:scan base-package="com.seiken-soft.lesson03"></mybatis-spring:scan>
+    <mybatis-spring:scan base-package="com.seiken-soft"></mybatis-spring:scan>
 
     <context:property-placeholder location="classpath:*.properties"></context:property-placeholder>
-
-    <context:component-scan base-package="com.seiken-soft.lesson03"></context:component-scan>
 
 </beans>

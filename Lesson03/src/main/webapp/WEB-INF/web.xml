@@ -14,6 +14,7 @@
   <!-- 2021/05/12　追加（ここから） -->
 
   <!-- エラーページ -->
+  <!-- 
   <error-page>
     <error-code>404</error-code>
     <location>/index.html</location>
@@ -22,7 +23,7 @@
     <error-code>500</error-code>
     <location>/index.html</location>
   </error-page>
-
+   -->
   <!-- 文字コードのエンコード -->
   <filter>
     <filter-name>CharacterEncodingFilter</filter-name>
@@ -44,6 +45,10 @@
   <!-- Spring MVCの設定 -->
   
   <!-- Spring設定ファイルを読みこむ設定 -->
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>/WEB-INF/spring-mvc.xml</param-value>
+  </context-param>
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
